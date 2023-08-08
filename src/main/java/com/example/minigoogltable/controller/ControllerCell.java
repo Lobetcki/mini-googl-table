@@ -3,10 +3,7 @@ package com.example.minigoogltable.controller;
 import com.example.minigoogltable.model.CellDTO;
 import com.example.minigoogltable.service.ServiceCell;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,6 +15,16 @@ public class ControllerCell {
 
     public ControllerCell(ServiceCell cellRepository) {
         this.serviceCell = cellRepository;
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<CellDTO> getData(String columnNumber, Integer row) {
+        CellDTO cellDTO = serviceCell.getData(columnNumber, row);
+        if (cellDTO != null) {
+            return ResponseEntity.ok(cellDTO);
+        } else {
+            return ResponseEntity.noContent().build();
+        }
     }
 
     @PutMapping("/calculate")
