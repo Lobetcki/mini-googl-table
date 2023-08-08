@@ -73,7 +73,9 @@ public class ServiceCell {
         // Заменяем ссылки на значения в формуле
         for (CellDTO cell : allCells) {
             String cellReference = cell.getColumnNumber() + "" + cell.getRow();
-            formulaReplace = formulaReplace.replace(cellReference, cell.getContent());
+            String content = cell.getContent();
+            if (content.isBlank()) {content = "0";}
+            formulaReplace = formulaReplace.replace(cellReference, content);
         }
         try {
             // Вычисляем формулу
