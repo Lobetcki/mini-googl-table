@@ -2,6 +2,7 @@ package com.example.minigoogltable.service;
 
 import com.example.minigoogltable.model.Cell;
 import com.example.minigoogltable.model.CellDTO;
+import com.example.minigoogltable.model.CellKey;
 import com.example.minigoogltable.repozitory.CellRepository;
 import com.fathzer.soft.javaluator.DoubleEvaluator;
 import jakarta.transaction.Transactional;
@@ -18,6 +19,14 @@ public class ServiceCell {
 
     public ServiceCell(CellRepository cellRepozitory) {
         this.cellRepository = cellRepozitory;
+    }
+
+    public CellDTO getData(String columnNumber, Integer row) {
+        CellKey cellKey = new CellKey();
+        cellKey.setColumnNumber(columnNumber);
+        cellKey.setRow(row);
+        return  CellDTO.fromCellDTO(cellRepository.findById(cellKey)
+                .orElseThrow(NullPointerException::new));
     }
 
     @Transactional
@@ -60,17 +69,18 @@ public class ServiceCell {
 
     private static String evaluateFormula(String formula, List<CellDTO> allCells) {
         DoubleEvaluator eval = new DoubleEvaluator();
+        String formulaReplace = formula;
         // Заменяем ссылки на значения в формуле
         for (CellDTO cell : allCells) {
             String cellReference = cell.getColumnNumber() + "" + cell.getRow();
-            formula = formula.replace(cellReference, cell.getContent());
+            formulaReplace = formulaReplace.replace(cellReference, cell.getContent());
         }
         try {
             // Вычисляем формулу
-            Double result = eval.evaluate(formula);
+            Double result = eval.evaluate(formulaReplace);
             return String.valueOf(result);
         } catch (RuntimeException e) {
-            return "=" + formula;
+            return "Error";
         }
     }
 }
