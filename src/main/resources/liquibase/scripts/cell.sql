@@ -4,8 +4,8 @@
 create table balance
 (
     row     int NOT NULL,
-    column_number  int,
-    content varchar(255) NOT NULL,
+    column_number  varchar(255) NOT NULL,
+    content varchar(255),
 
     primary key (row, column_number)
 );

@@ -3,11 +3,14 @@ package com.example.minigoogltable.service;
 import com.example.minigoogltable.model.Cell;
 import com.example.minigoogltable.model.CellDTO;
 import com.example.minigoogltable.repozitory.CellRepository;
+import com.fathzer.soft.javaluator.DoubleEvaluator;
+import com.fathzer.soft.javaluator.StaticVariableSet;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,20 +53,18 @@ public class ServiceCell {
     }
 
     private static String evaluateFormula(String formula, List<CellDTO> allCells) {
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByName("js");
+        DoubleEvaluator eval = new DoubleEvaluator();
         // Заменяем ссылки на значения в формуле
         for (CellDTO cell : allCells) {
-            String cellReference = cell.getRow() + "" + cell.getColumnNumber();
+            String cellReference = cell.getColumnNumber() + "" + cell.getRow();
             formula = formula.replace(cellReference, cell.getContent());
         }
-
         try {
             // Вычисляем формулу
-            double result = (double) engine.eval(formula);
+            Double result = eval.evaluate(formula);
             return String.valueOf(result);
-        } catch (javax.script.ScriptException e) {
-            return formula;
+        } catch (RuntimeException e) {
+            return "=" + formula;
         }
     }
 }

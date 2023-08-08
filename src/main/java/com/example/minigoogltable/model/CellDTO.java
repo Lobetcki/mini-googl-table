@@ -6,7 +6,7 @@ import lombok.Data;
 public class CellDTO {
 
     private Integer row;
-    private Integer columnNumber;
+    private String columnNumber;
     private String content;
 
     public static CellDTO fromCellDTO(Cell cell) {

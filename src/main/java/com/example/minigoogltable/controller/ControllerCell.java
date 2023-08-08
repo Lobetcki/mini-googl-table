@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping
 public class ControllerCell {
 
     private final ServiceCell serviceCell;
@@ -20,8 +20,9 @@ public class ControllerCell {
         this.serviceCell = cellRepository;
     }
 
-    @GetMapping("/calculate")
-    public ResponseEntity<List<CellDTO>> calculateSpreadsheet(@RequestBody List<CellDTO> cells) {
+    @PutMapping("/calculate")
+    public ResponseEntity<List<CellDTO>> calculateSpreadsheet(
+            @RequestBody List<CellDTO> cells) {
         List<CellDTO> cellDTOs = serviceCell.calculateSpreadsheet(cells);
         if (!cellDTOs.isEmpty()) {
             return ResponseEntity.ok(cellDTOs);

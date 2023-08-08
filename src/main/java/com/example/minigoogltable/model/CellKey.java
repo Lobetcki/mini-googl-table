@@ -10,6 +10,6 @@ import java.io.Serializable;
 public class CellKey implements Serializable {
 
     private Integer row;
-    private Integer columnNumber;
+    private String columnNumber;
 
 }

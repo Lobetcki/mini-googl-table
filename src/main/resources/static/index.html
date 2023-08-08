@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+    <html lang="ru">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +11,7 @@
                 margin: auto;
                 text-align: center;
             }
+
             th, td {
                 border: 1px solid black;
                 padding: 10px;
@@ -42,43 +43,44 @@
             <br>
             <hr>
         </div>
-            <table id="spreadsheet">
-                <tr>
-                    <th></th>
-                    <th>A</th>
-                    <th>B</th>
-                    <th>C</th>
-                    <th>D</th>
-                </tr>
-                <tr>
-                    <th>1</th>
-                    <td contenteditable="true" data-row="1" data-column="A"></td>
-                    <td contenteditable="true" data-row="1" data-column="B"></td>
-                    <td contenteditable="true" data-row="1" data-column="C"></td>
-                    <td contenteditable="true" data-row="1" data-column="D"></td>
-                </tr>
-                <tr>
-                    <th>2</th>
-                    <td contenteditable="true" data-row="2" data-column="A"></td>
-                    <td contenteditable="true" data-row="2" data-column="B"></td>
-                    <td contenteditable="true" data-row="2" data-column="C"></td>
-                    <td contenteditable="true" data-row="2" data-column="D"></td>
-                </tr>
-                <tr>
-                    <th>3</th>
-                    <td contenteditable="true" data-row="3" data-column="A"></td>
-                    <td contenteditable="true" data-row="3" data-column="B"></td>
-                    <td contenteditable="true" data-row="3" data-column="C"></td>
-                    <td contenteditable="true" data-row="3" data-column="D"></td>
-                </tr>
-                <tr>
-                    <th>4</th>
-                    <td contenteditable="true" data-row="4" data-column="A"></td>
-                    <td contenteditable="true" data-row="4" data-column="B"></td>
-                    <td contenteditable="true" data-row="4" data-column="C"></td>
-                    <td contenteditable="true" data-row="4" data-column="D"></td>
-                </tr>
-            </table>
+
+        <table id="spreadsheet">
+            <tr>
+                <th></th>
+                <th>A</th>
+                <th>B</th>
+                <th>C</th>
+                <th>D</th>
+            </tr>
+            <tr>
+                <th>1</th>
+                <td contenteditable="true" data-row="1" data-column="A"></td>
+                <td contenteditable="true" data-row="1" data-column="B"></td>
+                <td contenteditable="true" data-row="1" data-column="C"></td>
+                <td contenteditable="true" data-row="1" data-column="D"></td>
+            </tr>
+            <tr>
+                <th>2</th>
+                <td contenteditable="true" data-row="2" data-column="A"></td>
+                <td contenteditable="true" data-row="2" data-column="B"></td>
+                <td contenteditable="true" data-row="2" data-column="C"></td>
+                <td contenteditable="true" data-row="2" data-column="D"></td>
+            </tr>
+            <tr>
+                <th>3</th>
+                <td contenteditable="true" data-row="3" data-column="A"></td>
+                <td contenteditable="true" data-row="3" data-column="B"></td>
+                <td contenteditable="true" data-row="3" data-column="C"></td>
+                <td contenteditable="true" data-row="3" data-column="D"></td>
+            </tr>
+            <tr>
+                <th>4</th>
+                <td contenteditable="true" data-row="4" data-column="A"></td>
+                <td contenteditable="true" data-row="4" data-column="B"></td>
+                <td contenteditable="true" data-row="4" data-column="C"></td>
+                <td contenteditable="true" data-row="4" data-column="D"></td>
+            </tr>
+        </table>
 
         <script>
             document.addEventListener("DOMContentLoaded", function () {
@@ -98,10 +100,10 @@
 
                 function saveAndCalculateCell(row, column, content) {
                     const xhr = new XMLHttpRequest();
-                    xhr.open("POST", "/calculate", true);
+                    xhr.open("PUT", "/calculate", true);
                     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 
-                    const cellData = { row: row, column: column, content: content };
+                    const cellData = {row: row, columnNumber: column, content: content};
                     xhr.send(JSON.stringify([cellData])); // Преобразование в массив, как ожидается на сервере
 
                     xhr.onreadystatechange = function () {
