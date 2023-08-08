@@ -86,40 +86,51 @@
             document.addEventListener("DOMContentLoaded", function () {
                 const cells = document.querySelectorAll("td[contenteditable='true']");
 
-                cells.forEach(cell => {
-                    cell.addEventListener("keydown", function (event) {
-                        if (event.key === "Enter") {
-                            event.preventDefault();
-                            const content = cell.textContent;
-                            const row = cell.getAttribute("data-row");
-                            const column = cell.getAttribute("data-column");
-                            saveAndCalculateCell(row, column, content);
-                        }
+                function collectCellData() {
+                    const cellData = [];
+                    cells.forEach(cell => {
+                        const row = cell.getAttribute("data-row");
+                        const column = cell.getAttribute("data-column");
+                        const content = cell.textContent;
+                        cellData.push({row: row, columnNumber: column, content: content});
                     });
-                });
-
-                function saveAndCalculateCell(row, column, content) {
-                    const xhr = new XMLHttpRequest();
-                    xhr.open("PUT", "/calculate", true);
-                    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-
-                    const cellData = {row: row, columnNumber: column, content: content};
-                    xhr.send(JSON.stringify([cellData])); // Преобразование в массив, как ожидается на сервере
-
-                    xhr.onreadystatechange = function () {
-                        if (xhr.readyState === 4 && xhr.status === 200) {
-                            const responseData = JSON.parse(xhr.responseText);
-                            updateCellContent(responseData); // Обновление содержимого
-                        }
-                    };
+                    return cellData;
                 }
 
                 function updateCellContent(updatedCells) {
                     updatedCells.forEach(updatedCell => {
                         const cell = document.querySelector(`td[data-row='${updatedCell.row}'][data-column='${updatedCell.column}']`);
-                        cell.textContent = updatedCell.content;
+                        // if (cell) {
+                            cell.textContent = updatedCell.content;
+                        // }
                     });
                 }
+
+                function sendAndReceiveData() {
+                    const cellData = collectCellData();
+
+                    const xhr = new XMLHttpRequest();
+                    xhr.open("PUT", "/calculate", true);
+                    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+
+                    xhr.send(JSON.stringify(cellData));
+
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === 4 && xhr.status === 200) {
+                            const responseData = JSON.parse(xhr.responseText);
+                            updateCellContent(responseData);
+                        }
+                    };
+                }
+
+                cells.forEach(cell => {
+                    cell.addEventListener("keydown", function (event) {
+                        if (event.key === "Enter") {
+                            event.preventDefault();
+                            sendAndReceiveData();
+                        }
+                    });
+                });
             });
         </script>
     </body>

@@ -4,13 +4,10 @@ import com.example.minigoogltable.model.Cell;
 import com.example.minigoogltable.model.CellDTO;
 import com.example.minigoogltable.repozitory.CellRepository;
 import com.fathzer.soft.javaluator.DoubleEvaluator;
-import com.fathzer.soft.javaluator.StaticVariableSet;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,14 +22,25 @@ public class ServiceCell {
 
     @Transactional
     public List<CellDTO> calculateSpreadsheet(List<CellDTO> cellDTOs) {
-        List<Cell> cellsToSave = cellDTOs.stream()
-                .filter(c -> c != null && !c.getContent().isBlank())
-                .map(CellDTO::toCell)
-                .collect(Collectors.toList());
+        List<Cell> cellsToSave = new ArrayList<>();
+        for (CellDTO c : cellDTOs) {
+            if (c.getContent().isBlank()) {
+                Cell cel = c.toCell();
+                cel.setContent("");
+                cellsToSave.add(cel);
+            } else {
+                cellsToSave.add(c.toCell());
+            }
+        }
+//                cellDTOs.stream()
+//                .filter(c -> c != null && !c.getContent().isBlank())
+//                .map(CellDTO::toCell)
+//                .collect(Collectors.toList());
 
         cellRepository.saveAll(cellsToSave);
 
         List<Cell> allCells = cellRepository.findAll();
+
         cellDTOs = allCells.stream().map(CellDTO::fromCellDTO).collect(Collectors.toList());
 
         List<CellDTO> finalCellDTOs = cellDTOs;
