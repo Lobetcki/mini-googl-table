@@ -32,10 +32,7 @@ public class ServiceCell {
                 cellsToSave.add(c.toCell());
             }
         }
-//                cellDTOs.stream()
-//                .filter(c -> c != null && !c.getContent().isBlank())
-//                .map(CellDTO::toCell)
-//                .collect(Collectors.toList());
+
 
         cellRepository.saveAll(cellsToSave);
 
@@ -52,6 +49,7 @@ public class ServiceCell {
 
                 // Парсинг формулы и выполнение вычислений
                 String result = evaluateFormula(formula, finalCellDTOs);
+
                 cellDTO.setContent(result);
                 return cellDTO;
             } else {

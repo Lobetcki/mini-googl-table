@@ -99,10 +99,9 @@
 
                 function updateCellContent(updatedCells) {
                     updatedCells.forEach(updatedCell => {
-                        const cell = document.querySelector(`td[data-row='${updatedCell.row}'][data-column='${updatedCell.column}']`);
-                        // if (cell) {
+                        const cell = document.querySelector(`td[data-row='${updatedCell.row}']
+                                                                [data-column='${updatedCell.columnNumber}']`);
                             cell.textContent = updatedCell.content;
-                        // }
                     });
                 }
 
