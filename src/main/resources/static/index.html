@@ -40,6 +40,9 @@
             <p>
                 После нажатия на enter - производит расфокус клетки и расчет значений таблицы. "
             </p>
+            <p>
+                Если кликнуть мышкой по ячейке таблицы, то появиться формула (если формула была введена в ячейку ранее).
+            </p>
             <br>
             <hr>
         </div>
@@ -92,7 +95,9 @@
                         const row = cell.getAttribute("data-row");
                         const column = cell.getAttribute("data-column");
                         const content = cell.textContent;
-                        cellData.push({row: row, columnNumber: column, content: content});
+                        if (content.trim() !== "") {
+                            cellData.push({row: row, columnNumber: column, content: content});
+                        }
                     });
                     return cellData;
                 }

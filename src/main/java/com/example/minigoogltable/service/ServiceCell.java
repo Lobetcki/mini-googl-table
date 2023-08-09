@@ -8,7 +8,6 @@ import com.fathzer.soft.javaluator.DoubleEvaluator;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,8 +16,8 @@ public class ServiceCell {
 
     private final CellRepository cellRepository;
 
-    public ServiceCell(CellRepository cellRepozitory) {
-        this.cellRepository = cellRepozitory;
+    public ServiceCell(CellRepository cellRepository) {
+        this.cellRepository = cellRepository;
     }
 
     public CellDTO getData(String columnNumber, Integer row) {
@@ -31,38 +30,21 @@ public class ServiceCell {
 
     @Transactional
     public List<CellDTO> calculateSpreadsheet(List<CellDTO> cellDTOs) {
-        List<Cell> cellsToSave = new ArrayList<>();
-        for (CellDTO c : cellDTOs) {
-            if (c.getContent().isBlank()) {
-                Cell cel = c.toCell();
-                cel.setContent("");
-                cellsToSave.add(cel);
-            } else {
-                cellsToSave.add(c.toCell());
-            }
-        }
 
-
+        List<Cell> cellsToSave = cellDTOs.stream()
+                .map(CellDTO::toCell).collect(Collectors.toList());
+        cellRepository.deleteAll();
         cellRepository.saveAll(cellsToSave);
 
-        List<Cell> allCells = cellRepository.findAll();
-
-        cellDTOs = allCells.stream().map(CellDTO::fromCellDTO).collect(Collectors.toList());
-
-        List<CellDTO> finalCellDTOs = cellDTOs;
-
-        return cellDTOs.stream().map(cellDTO -> {
+        return cellDTOs.stream().peek(cellDTO -> {
             String content = cellDTO.getContent().trim();
             if (content.startsWith("=")) {
                 String formula = content.substring(1);
 
                 // Парсинг формулы и выполнение вычислений
-                String result = evaluateFormula(formula, finalCellDTOs);
+                String result = evaluateFormula(formula, cellDTOs);
 
                 cellDTO.setContent(result);
-                return cellDTO;
-            } else {
-                return cellDTO;
             }
         }).collect(Collectors.toList());
     }
@@ -70,6 +52,7 @@ public class ServiceCell {
     private static String evaluateFormula(String formula, List<CellDTO> allCells) {
         DoubleEvaluator eval = new DoubleEvaluator();
         String formulaReplace = formula;
+
         // Заменяем ссылки на значения в формуле
         for (CellDTO cell : allCells) {
             String cellReference = cell.getColumnNumber() + "" + cell.getRow();
@@ -77,6 +60,9 @@ public class ServiceCell {
             if (content.isBlank()) {content = "0";}
             formulaReplace = formulaReplace.replace(cellReference, content);
         }
+
+        formulaReplace = formulaReplace.replaceAll("[a-zA-Z]+\\d+", "0");
+
         try {
             // Вычисляем формулу
             Double result = eval.evaluate(formulaReplace);
